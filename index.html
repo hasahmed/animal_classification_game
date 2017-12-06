@@ -6,16 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/main.css">
 </head>
-<body>
+<body onload="appendAnimalClassImgs()">
 <div id="game-view">
     <script src="js/jquery.js"></script>
     <script src="js/main.js" type="application/javascript"></script>
-    <img id="bg" src="media/jungle.jpg">
-    <img id="frame" src="media/bird_frame.png">
+    <img id="bg" src="media/jungle.png">
+    <embed id="sound-message" data="media/msg.mp3" type="audio/mpeg" autoplay="false"></embed>
+    <div id="animal-class-wrapper">
+    </div>
     <div id="button-wrapper">
         <button id="play-button" onclick="playAudio()">PLAY</button>
     </div>
-    <embed id="sound-message" data="media/msg.mp3" type="audio/mpeg" autoplay="false"></embed>
 </div>
 </body>
 </html>
