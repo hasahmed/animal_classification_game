@@ -16,6 +16,11 @@
     right: 0;
     padding: 40px;
 }
+#display-animal{
+    margin: auto;
+    display: block;
+    width: 63%;
+}
 #play-button{
     background-color: green;
     color: white;
@@ -26,22 +31,46 @@
     font-size: large;
     cursor: pointer;
 }
+/*#animal-options{*/
+    /*display: inline;*/
+    /*position: relative;*/
+/*}*/
 /* div that wraps all the images*/
 #animal-class-wrapper{
     display: flex;
     position: absolute;
     bottom: 20px;
     width: 80%;
+    height: 20%;
     margin: auto;
     right: 0;
     left: 0;
+    /*background: green;*/
 }
-/* div that wraps each individual image */
+/*.option-wrapper{*/
+    /*position: relative;*/
+    /*width: 17%;*/
+    /*height: 80%;*/
+/*}*/
+
+/* applies to every option paragraph */
+.option-button{
+    position: relative;
+    width: 33%;
+    height: 80%;
+    cursor: pointer;
+    text-align: center;
+    font-size: 2em;
+    background-color: green;
+    color: white;
+    margin: 10px;
+}
+/* div that wraps all of the possible answers to a particular image */
 .animal-image-wrapper{
     position: relative;
-    width: 17%;
-    height: 80%;
+    padding: 10px;
 }
+/* div that wraps each individual image */
 .animal-class-image{
     position: relative;
     width: 100%;
