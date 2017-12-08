@@ -1,3 +1,6 @@
+body{
+    /*pointer-events: none;*/
+}
 #game-view{
     /*position: absolute;*/
     /*top: 0;*/
@@ -47,13 +50,14 @@
     left: 0;
     /*background: green;*/
 }
-/*.option-wrapper{*/
-    /*position: relative;*/
-    /*width: 17%;*/
-    /*height: 80%;*/
-/*}*/
-
-/* applies to every option paragraph */
+.overlay {
+    background-color: rgba(1, 1, 1, 0.7);
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
 .option-button{
     position: relative;
     width: 33%;
