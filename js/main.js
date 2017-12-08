@@ -13,41 +13,65 @@ const gameState = {
     animalsSeen: [],
     animalMax: 3,
     animalClass: '',
+    tmpCallback: null,
     reset: function(){
         this.loadedAnimal = '';
         this.animalsSeen = [];
         this.animalMax = 3;
         this.animalClass = '';
+        this.tmpCallback = null;
     }
 };
 
 const animalClasses = {
-    amphibians: [],
-    arthropods: [],
-    birds: [],
-    fish: [],
+    amphibians: [
+        "frog",
+        "newt",
+        "salamander"
+    ],
+    arthropods: [
+        "bee",
+        "crab",
+        "spider"
+    ],
+    birds: [
+        "eagle",
+        "flamingo",
+        "penguin"
+    ],
+    fish: [
+        "shark",
+        "bass",
+        "goldfish"
+    ],
     mammals: [
         "dog",
         "cow",
         "cat"
     ],
-    reptiles: []
+    reptiles: [
+        "crocodile",
+        "iguana",
+        "snake"
+    ]
 };
 
+const stringTogetherAudio = function(){
+    animalClassAudioFiles.classSound.removeEventListener('ended', gameState.tmpCallback);
+    animalClassAudioFiles.classSound.addEventListener('ended', gameState.tmpCallback);
+    animalClassAudioFiles[gameState.animalClass].play();
+};
 
 /**
  * actually has many more audio files than just animal classes,
  * see fillAnimalClassAudioFiles()
  */
 const animalClassAudioFiles = {
-    playMessage: function(animalClass, namedCallback){
-        const beginingAudio = this.pleaseSelect;
-        beginingAudio.addEventListener('ended', () =>{
-            this.classSound.removeEventListener('ended', namedCallback);
-            this.classSound.addEventListener('ended', namedCallback);
-            this[animalClass].play();
-        });
-        beginingAudio.play();
+    playMessage: function() {
+        const beginningAudio = this.pleaseSelect;
+        beginningAudio.removeEventListener('ended', stringTogetherAudio);
+        beginningAudio.addEventListener('ended', stringTogetherAudio);
+        beginningAudio.play();
     }
 };
 /**
@@ -126,6 +150,7 @@ const selectNextAnimal = function(animalClass) {
 
 const animalClassSelectionHandler = function(animalClass){
     gameState.animalClass = animalClass;
+    gameState.tmpCallback = appendOptionsElements_callback;
     const body = document.getElementsByTagName("body")[0];
     body.style.pointerEvents = 'none';
     animalClassAudioFiles.playMessage(animalClass, appendOptionsElements_callback);
