@@ -40,12 +40,11 @@ const animalClasses = {
  * see fillAnimalClassAudioFiles()
  */
 const animalClassAudioFiles = {
-    playMessage: function(animalClass, callback){
+    playMessage: function(animalClass, namedCallback){
         const beginingAudio = this.pleaseSelect;
         beginingAudio.addEventListener('ended', () =>{
-            this.classSound.addEventListener('ended', () =>{
-                if (typeof callback !== 'undefined') callback();
-            });
+            this.classSound.removeEventListener('ended', namedCallback);
+            this.classSound.addEventListener('ended', namedCallback);
             this[animalClass].play();
         });
         beginingAudio.play();
@@ -105,6 +104,9 @@ const animalClassElement = function(animalClass) {
     return imgWrapper;
 };
 
+/**
+ * called after audio message finishes
+ */
 const selectNextAnimal = function(animalClass) {
     const imgId = "display-animal";
     const view = document.getElementById("game-view");
@@ -113,31 +115,56 @@ const selectNextAnimal = function(animalClass) {
         view.removeChild(loadedAnimal);
     const imgElement = document.createElement("img");
     imgElement.id = imgId;
-    if (gameState.animalsSeen.length >= gameState.animalMax)
+    const randAnimal = getRandomAnimal(animalClass);
+    if (!randAnimal)
         return false;
-    let randAnimal;
-    do {
-        randAnimal = getRandomAnimal(animalClass);
-    } while (randAnimal === gameState.loadedAnimal || $.inArray(randAnimal, gameState.animalsSeen) !== -1);
     gameState.loadedAnimal = randAnimal;
-    gameState.animalsSeen.push(randAnimal);
     imgElement.src = getAnimalClassSubFolder(animalClass) + randAnimal + ext;
     view.appendChild(imgElement);
     return true;
 };
 
 const animalClassSelectionHandler = function(animalClass){
+    gameState.animalClass = animalClass;
     const body = document.getElementsByTagName("body")[0];
     body.style.pointerEvents = 'none';
-    animalClassAudioFiles.playMessage(animalClass, () => {
-        selectNextAnimal(animalClass);
-        appendOptionsElements(createOptionsElements(animalClass));
-        body.style.pointerEvents = 'auto';
-        gameState.animalClass = animalClass;
-    });
+    animalClassAudioFiles.playMessage(animalClass, appendOptionsElements_callback);
+        // () => {
+        // selectNextAnimal(animalClass);
+        // appendOptionsElements(createOptionsElements(animalClass));
+        // body.style.pointerEvents = 'auto';
+        // gameState.animalClass = animalClass;
+    // });
 };
 
-const getRandomAnimal = (animalClass) => animalClasses[animalClass][randIndex(animalClass)];
+// const callbackArgPasser
+const appendOptionsElements_callback = function(){
+    const body = document.getElementsByTagName("body")[0];
+    selectNextAnimal(gameState.animalClass);
+    appendOptionsElements(createOptionsElements(gameState.animalClass));
+    body.style.pointerEvents = 'auto';
+};
+
+const getRandomAnimal = (animalClass) => {
+    animals = animalClasses[animalClass];
+    for (let i = 0; i < animals.length; i++){
+        if ($.inArray(animals[i], gameState.animalsSeen) === -1){
+            gameState.animalsSeen.push(animals[i]);
+            return animals[i];
+        }
+    }
+    return false;
+    // if ($.inArray(gameState.loadedAnimal, gameState.animalsSeen) !== -1)
+    //     gameState.animalsSeen.push(gameState.loadedAnimal);
+    // if (gameState.animalsSeen.length >= gameState.animalMax)
+    //     return false;
+    // let randAnimal = animalClasses[animalClass][randIndex(animalClass)];
+    // while($.inArray(randAnimal, gameState.animalsSeen) === -1) {
+    //     gameState.animalsSeen.push(randAnimal);
+    //     randAnimal = animalClasses[animalClass][randIndex(animalClass)];
+    // }
+    // return randAnimal;
+};
 const randIndex = (animalClass) => Math.floor(Math.random() * (animalClasses[animalClass].length));
 
 const playMsg = function(){
@@ -166,7 +193,7 @@ const createOptionsElements = function(animalClass){
         btntag.className = btntagClass;
         btntag.addEventListener("click", () => optionClickHandler(animal));
         btntag.addEventListener("mouseover", () =>{
-          animalClassAudioFiles[animal].play();
+            animalClassAudioFiles[animal].play();
         });
         createdElements.push(btntag);
     });
@@ -189,15 +216,11 @@ const appendOptionsElements = function(optionElements) {
     });
 };
 
-const playAudioAndDisableClicksThenDoAction = function(audioObject, callback){
+const playAudioAndDisableClicksThenDoAction = function(audioObject, namedCallback){
     const body = document.getElementsByTagName("body")[0];
     body.style.pointerEvents = 'none';
-    audioObject.addEventListener('ended', () => {
-        body.style.pointerEvents = 'auto';
-        if (typeof callback !== 'undefined') {
-            callback();
-        }
-    });
+    audioObject.removeEventListener('ended', namedCallback);
+    audioObject.addEventListener('ended', namedCallback);
     audioObject.play();
 };
 
@@ -205,12 +228,16 @@ const optionClickHandler = function(option){
     if (option !== gameState.loadedAnimal)
         soundWrong.play();
     else {
-        playAudioAndDisableClicksThenDoAction(soundRight, function(){
-            if (!selectNextAnimal()) {
-                unhideClasses();
-                gameState.reset();
-            }
-        });
+        playAudioAndDisableClicksThenDoAction(soundRight, selectNextAnimalAndUnhideIfAllHaveBeenSeen_callback);
+    }
+};
+
+const selectNextAnimalAndUnhideIfAllHaveBeenSeen_callback = function(){
+    const body = document.getElementsByTagName("body")[0];
+    body.style.pointerEvents = 'auto';
+    if (!selectNextAnimal(gameState.animalClass)) {
+        unhideClasses();
+        gameState.reset();
     }
 };
 
